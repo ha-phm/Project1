@@ -1,0 +1,97 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.start {
+  background: white;
+  border: 2px solid #22c55e;
+  color: #22c55e;
+}
+
+.control-btn.start:hover:not(:disabled) {
+  background: #f0fdf4;
+}
+
+.control-btn.start.active {
+  background: #22c55e;
+  color: white;
+}
+
+.control-btn.end {
+  background: white;
+  border: 2px solid #ef4444;
+  color: #ef4444;
+}
+
+.control-btn.end:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.control-btn.end.active {
+  background: #ef4444;
+  color: white;
+}
+
+.control-btn.find {
+  background: #3b82f6;
+  color: white;
+}
+
+.control-btn.find:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.control-btn.reset {
+  background: #6b7280;
+  color: white;
+}
+
+.control-btn.reset:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .controls {
+    gap: 8px;
+  }
+
+  .control-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "my-mern-app-backend",
+  "version": "1.0.0",
+  "description": "Backend for the MERN stack MAP application for IT3160",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-rate-limit": "^8.2.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^6.20.0",
+    "mongoose": "^5.13.23",
+    "node-fetch": "^2.7.0",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

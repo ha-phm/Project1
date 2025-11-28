@@ -1,0 +1,27 @@
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-container .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom marker styles */
+.map-container .leaflet-marker-icon {
+  border: none;
+  background: transparent;
+}
+
+/* Popup styles */
+.map-container .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.map-container .leaflet-popup-content {
+  margin: 8px;
+  font-size: 14px;
+}

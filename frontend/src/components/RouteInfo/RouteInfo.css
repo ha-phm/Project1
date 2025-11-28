@@ -1,0 +1,70 @@
+.info-box {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.info-box.error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.info-box.instruction {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.info-box.instruction p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.info-box.success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.info-box.success h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.route-details {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.detail-item {
+  display: flex;
+  gap: 8px;
+}
+
+.detail-item .label {
+  font-weight: 600;
+}
+
+.detail-item .value {
+  color: #15803d;
+}
+
+.detail-item .value.algorithm {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .info-box {
+    padding: 12px;
+  }
+
+  .route-details {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

@@ -1,0 +1,106 @@
+.algorithm-selector {
+  margin-top: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+}
+
+.algorithm-label {
+  display: block;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1f2937;
+  margin-bottom: 12px;
+}
+
+.algorithm-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.algorithm-option {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.algorithm-option:hover:not(.disabled) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.algorithm-option.selected {
+  border-color: #3b82f6;
+  background: #dbeafe;
+}
+
+.algorithm-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.radio-button {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #9ca3af;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: border-color 0.2s ease;
+}
+
+.algorithm-option.selected .radio-button {
+  border-color: #3b82f6;
+}
+
+.radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.radio-inner.active {
+  background: #3b82f6;
+}
+
+.algorithm-info {
+  flex: 1;
+}
+
+.algorithm-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.algorithm-description {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .algorithm-options {
+    flex-direction: column;
+  }
+
+  .algorithm-option {
+    min-width: 100%;
+  }
+}
