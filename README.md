@@ -1,6 +1,6 @@
 
 ### Introduce
-A pathfinding website based on ai algorithms of IT3160 HUST.
+A pathfinding website.
 
 ### Prerequisites
 
