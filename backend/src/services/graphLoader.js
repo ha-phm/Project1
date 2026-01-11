@@ -25,7 +25,7 @@ class GraphLoader {
         console.log('✓ Graph is ready.');
     }
 
-    isLoaded() {
+    isLoaded() {     // kiểm tra xem trong RAM đã có dữ liệu chưa. Nếu server vừa khởi động lại mà dữ liệu chưa kịp nạp, hàm này sẽ báo để tránh gây lỗi cho thuật toán.
         return this.graph.size > 0;
     }
 

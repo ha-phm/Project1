@@ -1,25 +1,29 @@
 const { haversineDistance } = require('../utils/geo');
 const { performance } = require('perf_hooks');
 
+const Heap = require('heap-js').Heap;
+
 /**
- * PriorityQueue đơn giản cho A*
+ * PriorityQueue dùng binary min-heap từ heap-js, push or pop: O(log n)
  */
 class PriorityQueue {
     constructor() {
-        this.items = [];
+        // Comparator: nhỏ hơn → ưu tiên cao hơn (min-heap theo f score)
+        this.heap = new Heap((a, b) => a.priority - b.priority);
     }
+
     enqueue(item, priority) {
-        this.items.push({ item, priority });
-        this.items.sort((a, b) => a.priority - b.priority);
+        this.heap.push({ item, priority });
     }
+
     dequeue() {
-        return this.items.shift();
+        return this.heap.pop();
     }
+
     isEmpty() {
-        return this.items.length === 0;
+        return this.heap.size() === 0;
     }
 }
-
 /**
  * Thuật toán A* tìm đường ngắn nhất giữa 2 node
  * @param {Map<string, Object>} nodes - Map chứa node.id → { lat, lon }
@@ -37,10 +41,10 @@ function aStar(nodes, graph, startId, goalId) {
 
     if (startId === goalId) return { path: [startId], steps: 0 };
 
-    const openSet = new PriorityQueue();
-    const closedSet = new Set();
-    const cameFrom = new Map();
-    const gScore = new Map(); // Chi phí thực tế đã đi (distance)
+    const openSet = new PriorityQueue(); // các node đang chờ khám phá (ưu tiên f nhỏ nhất)
+    const closedSet = new Set();        // Set – node đã explore xong (không revisit)
+    const cameFrom = new Map();         // Map<nodeId, nodeId> – lưu node cha để reconstruct path
+    const gScore = new Map(); // g(n): start -> n : Chi phí thực tế đã đi (distance)
 
     gScore.set(startId, 0);
 
@@ -48,8 +52,8 @@ function aStar(nodes, graph, startId, goalId) {
     const startNode = nodes.get(startId);
 
     // Heuristic ban đầu
-    const initialH = haversineDistance(startNode.lat, startNode.lon, goalNode.lat, goalNode.lon);
-    openSet.enqueue(startId, initialH);
+    const initialH = haversineDistance(startNode.lat, startNode.lon, goalNode.lat, goalNode.lon);     // Heuristic ban đầu (khoảng cách thẳng từ start → goal)
+    openSet.enqueue(startId, initialH);    // f(n) = g(n) + h(n) = 0 + h(initial)
 
     let iterations = 0;
     const maxIterations = 200000;
@@ -59,7 +63,7 @@ function aStar(nodes, graph, startId, goalId) {
         const { item: current } = openSet.dequeue();
 
         if (current === goalId) {
-            // ✅ reconstruct path
+            //  reconstruct path
             const path = [current];
             let temp = current;
             let totalDistance = 0;
@@ -76,7 +80,7 @@ function aStar(nodes, graph, startId, goalId) {
             const endTime = performance.now();
             const elapsedTime = endTime - startTime;
             
-            console.log(`✅ A* tìm thấy đường sau ${iterations} bước`);
+            console.log(` A* tìm thấy đường sau ${iterations} bước`);
             return {
                 path: path,
                 steps: path.length - 1,
@@ -114,7 +118,7 @@ function aStar(nodes, graph, startId, goalId) {
         }
     }
 
-    console.warn(`❌ A* không tìm thấy đường sau ${iterations} bước`);
+    console.warn(` A* không tìm thấy đường sau ${iterations} bước`);
     return null;
 }
 

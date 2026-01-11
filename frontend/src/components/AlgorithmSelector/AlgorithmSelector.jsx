@@ -2,9 +2,8 @@ import React from 'react';
 import './AlgorithmSelector.css';
 
 const ALGORITHMS = [
-  { id: 'astar', name: 'A* (A-Star)', description: 'Nhanh nhưng vẫn đảm bảo chính xác' },
-  { id: 'dijkstra', name: 'Dijkstra', description: 'Đảm bảo đường đi ngắn nhất' },
-  { id: 'greedyBestFirstSearch', name: 'Greedy Best-First Search', description: 'Nhanh nhưng không đảm bảo ngắn nhất' },
+  { id: 'astar', name: 'A* (A-Star)' },
+  { id: 'dijkstra', name: 'Dijkstra' },
 ];
 
 const AlgorithmSelector = ({ selectedAlgorithm, onChange, disabled }) => {
@@ -23,7 +22,7 @@ const AlgorithmSelector = ({ selectedAlgorithm, onChange, disabled }) => {
             </div>
             <div className="algorithm-info">
               <div className="algorithm-name">{algo.name}</div>
-              <div className="algorithm-description">{algo.description}</div>
+             
             </div>
           </div>
         ))}

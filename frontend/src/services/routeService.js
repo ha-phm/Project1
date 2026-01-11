@@ -33,7 +33,7 @@ export const findRoute = async (startPoint, endPoint, algorithm = 'astar') => {
     });
 
     const data = await response.json();
-    console.log('📥 Response from backend:', data);
+    console.log(' Response from backend:', data);
 
     if (!response.ok) {
       throw new Error(data.error || 'Không thể kết nối đến dịch vụ tìm đường');
@@ -53,7 +53,7 @@ export const findRoute = async (startPoint, endPoint, algorithm = 'astar') => {
       raw: data
     };
   } catch (error) {
-    console.error('❌ Route finding error:', error);
+    console.error(' Route finding error:', error);
     throw error;
   }
 };

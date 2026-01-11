@@ -1,12 +1,12 @@
-const xml2js = require('xml2js');
-const fs = require('fs');
-const path = require('path');
-const dotenv = require('dotenv');
-const geo = require('../utils/geo.js');
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+const xml2js = require('xml2js'); // Thư viện parse XML thành JSON
+const fs = require('fs');         // Đọc file hệ thống
+const path = require('path');     // Xử lý đường dẫn file
+const dotenv = require('dotenv'); // Load biến môi trường từ .env
+const geo = require('../utils/geo.js');      // Hàm tính khoảng cách từ utils/geo.js
+dotenv.config({ path: path.join(__dirname, '../../.env') });    // Load .env từ root backend
 
-const mongoose = require('mongoose');
-const connectDB = require('./db.js');
+const mongoose = require('mongoose');      // ORM cho MongoDB
+const connectDB = require('./db.js');      // Hàm kết nối DB từ db.js
 
 // Map tốc độ trung bình (km/h) cho từng loại đường
 const HIGHWAY_SPEED_MAP = {
@@ -16,7 +16,7 @@ const HIGHWAY_SPEED_MAP = {
     'primary_link': 60, 'secondary_link': 50, 'tertiary_link': 40
 };
 const getSpeed = (highwayType) => {
-    return HIGHWAY_SPEED_MAP[highwayType] || 20; 
+    return HIGHWAY_SPEED_MAP[highwayType] || 20;   // Default 20km/h nếu không match
 };
 
 async function importOSM() {

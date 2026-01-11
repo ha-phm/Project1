@@ -132,7 +132,7 @@ exports.findRoute = async (req, res) => {
             });
         }
 
-        const coordinates = result.path.map(nodeId => {
+        const coordinates = result.path.map(nodeId => {  // Chuyển nodeId thành tọa độ
             const node = nodes.get(nodeId);
             return [node.lat, node.lon];
         });
@@ -164,7 +164,7 @@ exports.findRoute = async (req, res) => {
 /**
  * GET /api/route/algorithms
  */
-exports.listAlgorithms = (req, res) => {
+exports.listAlgorithms = (req, res) => {   
     try {
         const list = algorithmManager.list();
         res.json({ availableAlgorithms: list });

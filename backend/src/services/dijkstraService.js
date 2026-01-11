@@ -1,36 +1,37 @@
 const { haversineDistance } = require('../utils/geo'); 
 const { performance } = require('perf_hooks');
 
+const Heap = require('heap-js').Heap;
+
 /**
- * PriorityQueue đơn giản cho Dijkstra
- * (Cấu trúc giống A* nhưng dùng gScore làm priority)
+ * PriorityQueue dùng binary min-heap từ heap-js
+ * Ưu tiên theo gScore (chi phí thực tế tích lũy – giờ dùng distance)
  */
 class PriorityQueue {
     constructor() {
-        this.items = [];
+        this.heap = new Heap((a, b) => a.priority - b.priority);
     }
 
     enqueue(item, priority) {
-        this.items.push({ item, priority });
-        // Sắp xếp theo priority (chi phí tích lũy gScore)
-        this.items.sort((a, b) => a.priority - b.priority); 
+        this.heap.push({ item, priority });
     }
 
     dequeue() {
-        return this.items.shift();
+        return this.heap.pop();
     }
 
     isEmpty() {
-        return this.items.length === 0;
+        return this.heap.size() === 0;
     }
 }
 
 /**
- * Thuật toán Dijkstra tìm đường ngắn nhất (theo chi phí) giữa 2 node
- * {Map} nodes - Map chứa node.id → { lat, lon }
- * {Map} graph - Map<NodeId, Map<NeighborId, EdgeData>> (Danh sách kề)
- * {string} startId - ID node bắt đầu
- * {string} goalId - ID node đích
+ * Thuật toán Dijkstra tìm đường ngắn nhất THEO KHOẢNG CÁCH (distance)
+ * Giống A* nhưng KHÔNG dùng heuristic (h = 0)
+ * @param {Map<string, Object>} nodes - Map chứa node.id → { lat, lon }
+ * @param {Map<string, Map<string, Object>>} graph - Map<NodeId, Map<NeighborId, EdgeData>>
+ * @param {string} startId - ID node bắt đầu
+ * @param {string} goalId - ID node đích
  */
 function dijkstra(nodes, graph, startId, goalId) {
     const startTime = performance.now();
@@ -39,16 +40,16 @@ function dijkstra(nodes, graph, startId, goalId) {
         return null;
     }
 
-    if (startId === goalId) return { path: [startId], steps: 0, timeCost: 0 };
+    if (startId === goalId) return { path: [startId], steps: 0, distance: 0 };
 
     const openSet = new PriorityQueue();
     const closedSet = new Set();
     const cameFrom = new Map();
-    const gScore = new Map(); // Chi phí thực tế đã đi (g-score)
+    const gScore = new Map(); // Chi phí thực tế đã đi (tổng distance)
 
     gScore.set(startId, 0);
 
-    // Bỏ qua heuristic (h). Trọng số ưu tiên (priority) ban đầu chính là gScore (0)
+    // Priority ban đầu = gScore = 0 (không có heuristic)
     openSet.enqueue(startId, 0); 
 
     let iterations = 0;
@@ -56,11 +57,10 @@ function dijkstra(nodes, graph, startId, goalId) {
 
     while (!openSet.isEmpty() && iterations < maxIterations) {
         iterations++;
-        // PriorityQueue trả về node có chi phí gScore thấp nhất
         const { item: current } = openSet.dequeue(); 
 
         if (current === goalId) {
-            // Reconstruct path (giống A*)
+            // Reconstruct path
             const path = [current];
             let temp = current;
             let totalDistance = 0;
@@ -68,7 +68,7 @@ function dijkstra(nodes, graph, startId, goalId) {
             while (cameFrom.has(temp)) {
                 const prev = cameFrom.get(temp);
                 const edgeData = graph.get(prev).get(temp);
-                totalDistance += edgeData.distance; 
+                totalDistance += edgeData.distance; // Tổng khoảng cách (km)
                 temp = prev;
                 path.unshift(temp);
             }
@@ -76,12 +76,12 @@ function dijkstra(nodes, graph, startId, goalId) {
             const endTime = performance.now();
             const elapsedTime = endTime - startTime;
             
-            console.log(`✅ Dijkstra tìm thấy đường sau ${iterations} bước`);
+            console.log(` Dijkstra tìm thấy đường sau ${iterations} bước`);
             return {
                 path: path,
                 steps: path.length - 1,
-                distance: totalDistance, // Trả về tổng khoảng cách
-                elapsedTime: elapsedTime, // Thời gian thực thi thuật toán (ms)
+                distance: totalDistance, // Tổng khoảng cách (km)
+                elapsedTime: elapsedTime,
             };
         }
 
@@ -89,26 +89,24 @@ function dijkstra(nodes, graph, startId, goalId) {
 
         const neighborsMap = graph.get(current) || new Map();
         
-        // Lặp qua tất cả các cạnh đi ra
         for (const [neighborId, edgeData] of neighborsMap.entries()) { 
             if (closedSet.has(neighborId)) continue;
 
-            // Chi phí thực tế là thời gian (cost)
-            const costToNeighbor = edgeData.cost; 
+            // SỬA: Dùng distance thay vì cost
+            const costToNeighbor = edgeData.distance; 
             const tentativeG = gScore.get(current) + costToNeighbor;
 
-            // Nếu đây là đường đi tốt hơn (chi phí thấp hơn)
             if (!gScore.has(neighborId) || tentativeG < gScore.get(neighborId)) {
                 cameFrom.set(neighborId, current);
                 gScore.set(neighborId, tentativeG);
 
-                // TRỌNG SỐ ƯU TIÊN = gScore (chi phí thực tế)
+                // Priority = tentativeG (chi phí tích lũy distance)
                 openSet.enqueue(neighborId, tentativeG); 
             }
         }
     }
 
-    console.warn(`❌ Dijkstra không tìm thấy đường sau ${iterations} bước`);
+    console.warn(` Dijkstra không tìm thấy đường sau ${iterations} bước`);
     return null;
 }
 

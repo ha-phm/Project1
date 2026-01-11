@@ -1,7 +1,6 @@
 // Tọa độ mặc định - Trung tâm Hai Bà Trưng, Hà Nội
 export const DEFAULT_CENTER = [21.0122, 105.8522];
 export const DEFAULT_ZOOM = 14;
-
 // API URLs
 export const OSM_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 

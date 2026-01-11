@@ -13,12 +13,10 @@ const graphLoader = require('./services/graphLoader');
 const astarService = require('./services/astarService');
 // Nếu sau này có thêm thuật toán khác, chỉ cần require ở đây
 const dijkstraService = require('./services/dijkstraService');
-const greedyBestFirstSearchService = require('./services/greedyBestFirstSearchService');
 
 // Đăng ký vào algorithmManager
 algorithmManager.register(astarService);
 algorithmManager.register(dijkstraService);
-algorithmManager.register(greedyBestFirstSearchService);
 
 
 // =============================
@@ -68,6 +66,6 @@ graphLoader.loadAll().catch((err) => {
 // Khởi động Server
 // =============================
 app.listen(PORT, () => {
-  console.log(`✅ App running at http://localhost:${PORT}`);
+  console.log(` App running at http://localhost:${PORT}`);
 });
 
