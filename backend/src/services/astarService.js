@@ -83,7 +83,7 @@ function aStar(nodes, graph, startId, goalId) {
             console.log(` A* tìm thấy đường sau ${iterations} bước`);
             return {
                 path: path,
-                steps: path.length - 1,
+                steps:  path.length - 1,
                 distance: totalDistance, // Trả về tổng khoảng cách
                 elapsedTime: elapsedTime, // Thời gian thực thi thuật toán (ms)
             };

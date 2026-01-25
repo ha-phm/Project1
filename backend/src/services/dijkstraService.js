@@ -79,7 +79,7 @@ function dijkstra(nodes, graph, startId, goalId) {
             console.log(` Dijkstra tìm thấy đường sau ${iterations} bước`);
             return {
                 path: path,
-                steps: path.length - 1,
+                steps:  path.length - 1,
                 distance: totalDistance, // Tổng khoảng cách (km)
                 elapsedTime: elapsedTime,
             };

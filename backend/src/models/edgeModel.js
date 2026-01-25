@@ -19,6 +19,14 @@ const edgeSchema = new mongoose.Schema({
     type: String,
     required: true,
     index: true // liên kết với id của way
+  },
+  cost: {          
+    type: Number, 
+    required: true 
+  },
+  type: {         
+    type: String,
+    required: true
   }
 });
 

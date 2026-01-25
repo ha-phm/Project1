@@ -13,7 +13,7 @@ class AlgorithmManager {
       throw new Error('Thuật toán không hợp lệ: cần có name và hàm findPath(graph, startId, endId)');
     }
     this.algorithms[service.name] = service;
-    console.log(`✅ Đã đăng ký thuật toán: ${service.name}`);
+    console.log(` Đã đăng ký thuật toán: ${service.name}`);
   }
 
   /**

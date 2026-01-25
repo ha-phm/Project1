@@ -22,7 +22,7 @@ class GraphLoader {
             this.graph.get(e.from).set(e.to, e);
         }
         console.log(`Graph loaded: ${this.nodes.size} nodes, ${edges.length} edges.`);
-        console.log('✓ Graph is ready.');
+        console.log(' Graph is ready.');
     }
 
     isLoaded() {     // kiểm tra xem trong RAM đã có dữ liệu chưa. Nếu server vừa khởi động lại mà dữ liệu chưa kịp nạp, hàm này sẽ báo để tránh gây lỗi cho thuật toán.

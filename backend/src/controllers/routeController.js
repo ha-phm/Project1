@@ -1,7 +1,7 @@
 const algorithmManager = require('../services/algorithmManager');
 const graphLoader = require('../services/graphLoader');
 const { haversineDistance } = require('../utils/geo');
-
+const NodeModel = require('../models/nodeModel');
 // Bảng ưu tiên cho các loại đường (Điểm càng cao càng ưu tiên)
 const HIGHWAY_PRIORITY = {
   'motorway': 5, 'trunk': 5, 'primary': 4, 'secondary': 3, 'tertiary': 2,
@@ -12,25 +12,38 @@ const HIGHWAY_PRIORITY = {
 
 
 /**
- * Tìm top N nodes gần nhất (Sử dụng JS iteration)
- * nodes - Map của tất cả nodes
- * lat, lon - Tọa độ điểm cần tìm
- * count - Số lượng node cần tìm
- * Trả về mảng các object { nodeId, node, dist }
+ * --- MỚI: TÌM KIẾM SỬ DỤNG MONGODB INDEX ---
+ * Tìm top N nodes gần nhất sử dụng $near của MongoDB
+ * Tận dụng index '2dsphere' đã khai báo trong Model
  */
-function findNearestNodes(nodes, lat, lon, count = 10) {
-  // Chuyển Map thành mảng để tính khoảng cách
-  const distances = Array.from(nodes.entries()).map(([nodeId, node]) => {
-    return {
-      nodeId,
-      node,
-      dist: haversineDistance(lat, lon, node.lat, node.lon),
-    };
-  });
+async function findNearestNodesDB(lat, lon, count = 10) {
+  try {
+    // MongoDB GeoJSON lưu theo thứ tự [Longitude, Latitude]
+    const coordinates = [parseFloat(lon), parseFloat(lat)];
 
-  // Sắp xếp và trả về N kết quả đầu tiên
-  distances.sort((a, b) => a.dist - b.dist);
-  return distances.slice(0, count);
+    const foundNodes = await NodeModel.find({
+      loc: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: coordinates
+          }
+          // $maxDistance: 500 // Có thể thêm giới hạn bán kính (mét) nếu muốn
+        }
+      }
+    }).limit(count).select('id lat lon'); // Chỉ lấy các trường cần thiết
+
+    // Map kết quả về định dạng cũ để tương thích với hàm getBestSnapNode
+    return foundNodes.map(node => ({
+      nodeId: node.id,
+      node: { lat: node.lat, lon: node.lon }, 
+      // Vẫn tính lại dist để phục vụ logic so sánh bên dưới (chi phí cực nhỏ vì N=10)
+      dist: haversineDistance(lat, lon, node.lat, node.lon)
+    }));
+  } catch (error) {
+    console.error("❌ Lỗi truy vấn Geo MongoDB:", error);
+    return [];
+  }
 }
 
 /**
@@ -96,16 +109,24 @@ exports.findRoute = async (req, res) => {
 
         const { nodes, graph } = await graphLoader.getGraph();
 
-        // 1. TÌM NODE TỐT NHẤT CHO ĐIỂM BẮT ĐẦU
+       // 1. TÌM NODE TỐT NHẤT CHO ĐIỂM BẮT ĐẦU
         if (start && start.lat && start.lng) {
-            const nearestStartNodes = findNearestNodes(nodes, start.lat, start.lng, 10);
-            startId = getBestSnapNode(nearestStartNodes, graph);
+            // Gọi MongoDB để tìm node gần nhất
+            const nearestStartNodes = await findNearestNodesDB(start.lat, start.lng, 10);
+            
+            // Logic Snap giữ nguyên, nhưng cần check map in-memory để đảm bảo tính liên kết
+            // (Vì DB có thể chứa node mà Graph in-memory chưa load hoặc ngược lại nếu không đồng bộ)
+            const validStartNodes = nearestStartNodes.filter(n => nodes.has(n.nodeId));
+            
+            startId = getBestSnapNode(validStartNodes, graph);
         }
 
         // 2. TÌM NODE TỐT NHẤT CHO ĐIỂM KẾT THÚC
         if (end && end.lat && end.lng) {
-            const nearestGoalNodes = findNearestNodes(nodes, end.lat, end.lng, 10);
-            goalId = getBestSnapNode(nearestGoalNodes, graph);
+            const nearestGoalNodes = await findNearestNodesDB(end.lat, end.lng, 10);
+            const validGoalNodes = nearestGoalNodes.filter(n => nodes.has(n.nodeId));
+            
+            goalId = getBestSnapNode(validGoalNodes, graph);
         }
 
         if (!startId || !goalId) {
@@ -123,7 +144,7 @@ exports.findRoute = async (req, res) => {
             return res.status(400).json({ error: `Thuật toán '${algo}' không tồn tại` });
         }
 
-        console.log(`🔍 Finding route: ${startId} → ${goalId} using ${algo}`);
+        console.log(` Finding route: ${startId} → ${goalId} using ${algo}`);
         const result = await algorithmManager.run(algo, { nodes, graph, startId, goalId });
 
         if (!result || !result.path || result.path.length === 0) {
@@ -141,7 +162,7 @@ exports.findRoute = async (req, res) => {
 
         const estimatedDuration = (result.distance / 30) * 3600;
 
-        console.log(`✅ Found path: ${result.path.length} nodes, ${result.distance.toFixed(2)} km`);
+        console.log(` Found path: ${result.path.length} nodes, ${result.distance.toFixed(2)} km`);
 
         return res.status(200).json({
             success: true,

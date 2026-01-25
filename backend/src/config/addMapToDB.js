@@ -5,6 +5,9 @@ const dotenv = require('dotenv'); // Load biến môi trường từ .env
 const geo = require('../utils/geo.js');      // Hàm tính khoảng cách từ utils/geo.js
 dotenv.config({ path: path.join(__dirname, '../../.env') });    // Load .env từ root backend
 
+const Node = require('../models/nodeModel'); // Trỏ đúng đường dẫn
+const Edge = require('../models/edgeModel');
+const Way = require('../models/wayModel');
 const mongoose = require('mongoose');      // ORM cho MongoDB
 const connectDB = require('./db.js');      // Hàm kết nối DB từ db.js
 
@@ -21,7 +24,7 @@ const getSpeed = (highwayType) => {
 
 async function importOSM() {
     try {
-        console.log('🚀 Starting OSM Import (FILTERED & COSTED)...');
+        console.log(' Starting OSM Import (FILTERED & COSTED)...');
         await connectDB();
         const db = mongoose.connection.db;
 
@@ -41,7 +44,7 @@ async function importOSM() {
         // Đọc file OSM và kiểm tra
         const xmlPath = path.join(__dirname, 'haibatrung.osm');
         if (!fs.existsSync(xmlPath)) {
-            console.error(`❌ File not found: ${xmlPath}`);
+            console.error(` File not found: ${xmlPath}`);
             process.exit(1);
         }
 
@@ -49,14 +52,11 @@ async function importOSM() {
         const parser = new xml2js.Parser();
         const result = await parser.parseStringPromise(xmlData);
 
-        const nodesCollection = db.collection('nodes');
-        const waysCollection = db.collection('ways');
-        const edgesCollection = db.collection('edges');
 
         const ALLOWED_HIGHWAY_TYPES = new Set(['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'unclassified', 'residential', 'living_street', 'service', 'road', 'primary_link', 'secondary_link', 'tertiary_link']);
 
         // BƯỚC 1: Thu thập TẤT CẢ nodes từ OSM
-        console.log('📍 Step 1: Collecting all nodes...');
+        console.log(' Step 1: Collecting all nodes...');
         let allNodesMap = new Map();
         if (result.osm && result.osm.node) {
             for (const node of result.osm.node) {
@@ -64,14 +64,14 @@ async function importOSM() {
                 const lon = parseFloat(node.$.lon);
                 allNodesMap.set(node.$.id, { lat, lon });
             }
-            console.log(`✓ Found ${allNodesMap.size} total nodes in OSM file`);
+            console.log(` Found ${allNodesMap.size} total nodes in OSM file`);
         } else {
-            console.error('❌ Không tìm thấy node nào trong file OSM!');
+            console.error(' Không tìm thấy node nào trong file OSM!');
             return;
         }
 
         // BƯỚC 2: Filter ways, tạo edges 2 chiều, và tìm nodes được sử dụng
-        console.log('\n🛣️  Step 2: Filtering ways and creating edges...');
+        console.log('\n  Step 2: Filtering ways and creating edges...');
         
         const usedNodesSet = new Set();
         const wayData = [];
@@ -115,7 +115,7 @@ async function importOSM() {
                         
                         if (dist < 0.001) continue;
 
-                        // ✅ TÍNH TOÁN CHI PHÍ THỜI GIAN (COST)
+                        //  TÍNH TOÁN CHI PHÍ THỜI GIAN (COST)
                         const speed_kmh = getSpeed(highwayType); 
                         const time_cost = distance_km / speed_kmh; 
                         
@@ -137,46 +137,35 @@ async function importOSM() {
                 wayData.push({ id: way.$.id, nodes: nodeRefs, tags });
             }
 
-            console.log(`✓ Accepted ways: ${acceptedWays} / ${totalWays}`);
+            console.log(` Accepted ways: ${acceptedWays} / ${totalWays}`);
         }
 
         // BƯỚC 3: Chỉ import nodes được sử dụng
-        console.log(`\n📍 Step 3: Importing ${usedNodesSet.size} used nodes...`);
+        console.log(`\n Step 3: Importing ${usedNodesSet.size} used nodes...`);
         const nodeData = [];
         for (const nodeId of usedNodesSet) {
             const node = allNodesMap.get(nodeId);
             if (node) { nodeData.push({ id: nodeId, lat: node.lat, lon: node.lon, loc: { type: 'Point', coordinates: [node.lon, node.lat] } }); }
         }
         if (nodeData.length) {
-            await nodesCollection.insertMany(nodeData, { ordered: false });
-            console.log(`✓ Imported ${nodeData.length} nodes`);
+            await Node.insertMany(nodeData, { ordered: false });
+            console.log(` Imported ${nodeData.length} nodes`);
         }
 
         // BƯỚC 4: Import ways và edges
-        console.log('\n🛣️  Step 4: Importing ways and edges...');
-        if (wayData.length) { await waysCollection.insertMany(wayData, { ordered: false }); console.log(`✓ Imported ${wayData.length} ways`); }
-        if (edgeData.length) { await edgesCollection.insertMany(edgeData, { ordered: false }); console.log(`✓ Imported ${edgeData.length} edges`); }
-
-        // BƯỚC 5: Tạo indexes
-        console.log('\n🔧 Step 5: Creating indexes...');
-        await nodesCollection.createIndex({ id: 1 }, { unique: true, sparse: true });
-        await nodesCollection.createIndex({ loc: "2dsphere" });
-        await waysCollection.createIndex({ id: 1 }, { unique: true, sparse: true });
-        await waysCollection.createIndex({ nodes: 1 });
-        await edgesCollection.createIndex({ from: 1 });
-        await edgesCollection.createIndex({ to: 1 });
-        await edgesCollection.createIndex({ wayId: 1 });
-        console.log('✓ Indexes created');
+        console.log('\n  Step 4: Importing ways and edges...');
+        if (wayData.length) { await Way.insertMany(wayData, { ordered: false }); console.log(` Imported ${wayData.length} ways`); }
+        if (edgeData.length) { await Edge.insertMany(edgeData, { ordered: false }); console.log(` Imported ${edgeData.length} edges`); }
 
         // Thống kê
-        console.log('\n📊 Import Summary:');
+        console.log('\n Import Summary:');
         console.log(`  Nodes (used): ${nodeData.length}`);
         console.log(`  Edges: ${edgeData.length}`);
 
         await mongoose.disconnect();
-        console.log('\n✅ Import completed successfully!');
+        console.log('\n Import completed successfully!');
     } catch (err) {
-        console.error('❌ Import failed:', err);
+        console.error(' Import failed:', err);
         try { await mongoose.disconnect(); } catch (_) {}
         process.exit(1);
     }
