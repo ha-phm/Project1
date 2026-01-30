@@ -12,7 +12,7 @@ const HIGHWAY_PRIORITY = {
 
 
 /**
- * --- MỚI: TÌM KIẾM SỬ DỤNG MONGODB INDEX ---
+ * --- TÌM KIẾM SỬ DỤNG MONGODB INDEX ---
  * Tìm top N nodes gần nhất sử dụng $near của MongoDB
  * Tận dụng index '2dsphere' đã khai báo trong Model
  */
@@ -41,7 +41,7 @@ async function findNearestNodesDB(lat, lon, count = 10) {
       dist: haversineDistance(lat, lon, node.lat, node.lon)
     }));
   } catch (error) {
-    console.error("❌ Lỗi truy vấn Geo MongoDB:", error);
+    console.error("Lỗi truy vấn Geo MongoDB:", error);
     return [];
   }
 }
@@ -177,7 +177,7 @@ exports.findRoute = async (req, res) => {
         });
 
     } catch (err) {
-        console.error('❌ Route error:', err);
+        console.error('Route error:', err);
         res.status(500).json({ error: 'Lỗi máy chủ', message: err.message });
     }
 };
@@ -240,7 +240,7 @@ exports.getGraphStats = async (req, res) => {
         let totalEdges = 0;
         
         for (const [nodeId, edges] of graph.entries()) {
-            totalEdges += edges.size; // Sửa lỗi .length thành .size nếu là Map
+            totalEdges += edges.size; 
             if (edges.size > 0) {
                 connectedNodes++;
             }

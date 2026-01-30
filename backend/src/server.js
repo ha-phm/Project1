@@ -11,7 +11,6 @@ const graphLoader = require('./services/graphLoader');
 
 // Nạp các thuật toán tìm đường
 const astarService = require('./services/astarService');
-// Nếu sau này có thêm thuật toán khác, chỉ cần require ở đây
 const dijkstraService = require('./services/dijkstraService');
 
 // Đăng ký vào algorithmManager
@@ -68,4 +67,3 @@ graphLoader.loadAll().catch((err) => {
 app.listen(PORT, () => {
   console.log(` App running at http://localhost:${PORT}`);
 });
-

@@ -71,7 +71,7 @@ async function importOSM() {
         }
 
         // BƯỚC 2: Filter ways, tạo edges 2 chiều, và tìm nodes được sử dụng
-        console.log('\n  Step 2: Filtering ways and creating edges...');
+        console.log('\n  Step 2: Filtering ways and creating edges...');
         
         const usedNodesSet = new Set();
         const wayData = [];
@@ -153,7 +153,7 @@ async function importOSM() {
         }
 
         // BƯỚC 4: Import ways và edges
-        console.log('\n  Step 4: Importing ways and edges...');
+        console.log('\n Step 4: Importing ways and edges...');
         if (wayData.length) { await Way.insertMany(wayData, { ordered: false }); console.log(` Imported ${wayData.length} ways`); }
         if (edgeData.length) { await Edge.insertMany(edgeData, { ordered: false }); console.log(` Imported ${edgeData.length} edges`); }
 

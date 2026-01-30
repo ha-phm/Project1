@@ -152,7 +152,7 @@ async function checkGraph() {
     }
 
     if (invalidEdges > 0) {
-      console.log(`❌ ERROR: Found ${invalidEdges} edges referencing non-existent nodes!`);
+      console.log(`ERROR: Found ${invalidEdges} edges referencing non-existent nodes!`);
       console.log(`   Suggestion: Clean up database`);
     }
 
@@ -171,7 +171,7 @@ async function checkGraph() {
     console.log(`\n Analysis Complete!`);
     await mongoose.disconnect();
   } catch (err) {
-    console.error('❌ Error:', err);
+    console.error('Error:', err);
     process.exit(1);
   }
 }

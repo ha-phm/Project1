@@ -7,7 +7,7 @@ export const findRoute = async (startPoint, endPoint, algorithm = 'astar') => {
     throw new Error('Vui lòng chọn cả điểm bắt đầu và điểm kết thúc');
   }
 
-  console.log('🔍 Sending to backend:', {
+  console.log('Sending to backend:', {
     start: { lat: startPoint[0], lng: startPoint[1] },
     end: { lat: endPoint[0], lng: endPoint[1] },
     algorithm
