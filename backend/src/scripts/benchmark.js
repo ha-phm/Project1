@@ -31,9 +31,9 @@ async function runBenchmark() {
                 { id: 'distance', title: 'QUÃNG ĐƯỜNG (KM)' },
                 { id: 'astar_time', title: 'A* TIME (MS)' },
                 { id: 'dijkstra_time', title: 'DIJKSTRA TIME (MS)' },
-                { id: 'astar_steps', title: 'A* STEPS (NODES)' },      // Mới
-                { id: 'dijkstra_steps', title: 'DIJKSTRA STEPS (NODES)' }, // Mới
-                { id: 'step_reduction', title: 'TIẾT KIỆM BƯỚC (%)' }    // Mới
+                { id: 'astar_steps', title: 'A* STEPS (NODES)' },      
+                { id: 'dijkstra_steps', title: 'DIJKSTRA STEPS (NODES)' }, 
+                { id: 'step_reduction', title: 'TIẾT KIỆM BƯỚC (%)' }    
             ]
         });
 
@@ -50,8 +50,7 @@ async function runBenchmark() {
             if (!resAStar || !resDijkstra || !resAStar.path) {
                 i--; continue;
             }
-
-            // Tính toán tỷ lệ tiết kiệm bước duyệt
+            
             const reduction = ((resDijkstra.steps) / resAStar.steps).toFixed(2);
 
             results.push({
@@ -59,8 +58,8 @@ async function runBenchmark() {
                 distance: resAStar.distance.toFixed(3),
                 astar_time: resAStar.elapsedTime.toFixed(4),
                 dijkstra_time: resDijkstra.elapsedTime.toFixed(4),
-                astar_steps: resAStar.steps,        // Lấy từ kết quả trả về của thuật toán
-                dijkstra_steps: resDijkstra.steps,  // Lấy từ kết quả trả về của thuật toán
+                astar_steps: resAStar.steps,        
+                dijkstra_steps: resDijkstra.steps,  
                 step_reduction: reduction 
             });
                 if (i % 10 === 0) console.log(` Xong ${i}/${TOTAL_PAIRS} cặp`);
