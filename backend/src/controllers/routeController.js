@@ -160,7 +160,7 @@ exports.findRoute = async (req, res) => {
 
         
 
-        const estimatedDuration = (result.distance / 30) * 3600;
+        
 
         console.log(` Found path: ${result.path.length} nodes, ${result.distance.toFixed(2)} km`);
 
@@ -169,7 +169,7 @@ exports.findRoute = async (req, res) => {
             algorithm: algo,
             path: coordinates,
             distance: result.distance * 1000,
-            duration: estimatedDuration,
+            duration: result.totalDuration,
             elapsedTime: result.elapsedTime,
             steps: result.steps,
             startPoint: { lat: nodes.get(startId).lat, lon: nodes.get(startId).lon }, 

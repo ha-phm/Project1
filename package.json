@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "concurrently": "^6.0.0",
+    "csv-writer": "^1.6.0",
     "nodemon": "^2.0.0"
   },
-  "devDependencies": {},
   "author": "",
   "license": "ISC"
 }

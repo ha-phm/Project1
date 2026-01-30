@@ -90,7 +90,7 @@ export const useMap = (mapContainerRef) => {
     }, [map, startPoint, endPoint]);
 
 
-    // === HÀM VẼ ROUTE (FIX LỖI CẮT NGẮN ĐOẠN CUỐI) ===
+    // === HÀM VẼ ROUTE ===
     const displayRoute = useCallback((routeData) => {
         if (!map || !routeData || !routeData.coordinates) return;
 

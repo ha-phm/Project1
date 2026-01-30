@@ -69,6 +69,12 @@ function dijkstra(nodes, graph, startId, goalId) {
                 const prev = cameFrom.get(temp);
                 const edgeData = graph.get(prev).get(temp);
                 totalDistance += edgeData.distance; // Tổng khoảng cách (km)
+                const speed = getSpeed(edgeData.type); // Lấy tốc độ từ bảng HIGHWAY_SPEED_MAP
+    
+                const timeOnEdge = (edgeData.   distance / speed) * 3600; // Đổi ra giây: (km / (km/h)) * 3600
+    
+    
+                totalDuration += timeOnEdge; // Cộng dồn thời gian từng đoạn
                 temp = prev;
                 path.unshift(temp);
             }
@@ -79,9 +85,10 @@ function dijkstra(nodes, graph, startId, goalId) {
             console.log(` Dijkstra tìm thấy đường sau ${iterations} bước`);
             return {
                 path: path,
-                steps:  path.length - 1,
+                steps: path.length - 1, //iterations,
                 distance: totalDistance, // Tổng khoảng cách (km)
-                elapsedTime: elapsedTime,
+                elapsedTime: elapsedTime
+                
             };
         }
 

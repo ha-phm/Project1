@@ -14,8 +14,7 @@ import {
  * Khởi tạo bản đồ Leaflet
  */
 export const initializeMap = (container) => {
-  // KHÔNG CẦN KIỂM TRA window.L nữa
-  // const L = window.L; <-- XÓA DÒNG NÀY
+  
   const map = L.map(container).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
 
   L.tileLayer(OSM_TILE_URL, {
