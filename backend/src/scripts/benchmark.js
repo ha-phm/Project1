@@ -63,15 +63,15 @@ async function runBenchmark() {
                 dijkstra_steps: resDijkstra.steps,  // Lấy từ kết quả trả về của thuật toán
                 step_reduction: reduction 
             });
-                if (i % 10 === 0) console.log(`✅ Xong ${i}/${TOTAL_PAIRS} cặp`);
+                if (i % 10 === 0) console.log(` Xong ${i}/${TOTAL_PAIRS} cặp`);
             
         }
 
         await csvWriter.writeRecords(results);
-        console.log(`\n✨ HOÀN THÀNH! Kết quả lưu tại: ${OUTPUT_FILE}`);
+        console.log(`\n HOÀN THÀNH! Kết quả lưu tại: ${OUTPUT_FILE}`);
         process.exit(0);
     } catch (error) {
-        console.error('❌ Lỗi:', error);
+        console.error(' Lỗi:', error);
         process.exit(1);
     }
 }
