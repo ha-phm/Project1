@@ -12,7 +12,7 @@ A pathfinding website.
 1. Clone the repository:
    ```
    git clone <repository-url>
-   cd my-mern-app
+   
    ```
 
 2. Install backend dependencies:
@@ -65,7 +65,7 @@ Feel free to submit issues or pull requests for improvements or bug fixes.
 
 ### Structure
 ```
-my-mern-app/backend/src/
+/backend/src/
 ├── server.js
 ├── config/
 │   |── addMapToDB.js        #Chuyển file .osm vào trong MongoDB  
@@ -88,5 +88,5 @@ my-mern-app/backend/src/
 └── utils/
     └── geo.js               #Chứa hàm tiện ích toán học
 
-my-mern-app/frontend/src/    #Đang xây dựng
+/frontend/src/    #Đang xây dựng
 ```
